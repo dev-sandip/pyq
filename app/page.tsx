@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,6 +20,10 @@ import {
   BookOpen,
   Moon,
   Sun,
+  Eye,
+  X,
+  Download,
+  Maximize2,
 } from "lucide-react";
 import { questionsData } from "@/lib/data";
 
@@ -276,46 +280,97 @@ const getCategoryColor = (category: string, isDark: boolean) => {
   };
 };
 
-export default function IOEQuestionsPage() {
-  const [selectedSemester, setSelectedSemester] = useState("1st_Semester");
+export default function IOEQuestionsInterface() {
+  const [activeSemester, setActiveSemester] = useState("1st_Semester");
   const [searchQuery, setSearchQuery] = useState("");
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [previewData, setPreviewData] = useState<{
+    isOpen: boolean;
+    title: string;
+    url: string;
+  }>({
+    isOpen: false,
+    title: "",
+    url: "",
+  });
 
   const semesters = Object.keys(questionsData);
-  const currentSubjects =
-    questionsData[selectedSemester as keyof typeof questionsData] || [];
 
-  const filteredSubjects = searchQuery
-    ? Object.entries(questionsData).flatMap(([semester, subjects]) =>
-        subjects
-          .filter((subject) =>
-            subject.text.toLowerCase().includes(searchQuery.toLowerCase())
-          )
-          .map((subject) => ({
-            ...subject,
-            semester: semester.replace("_", " "),
-          }))
-      )
-    : currentSubjects.map((subject) => ({
-        ...subject,
-        semester: selectedSemester.replace("_", " "),
-      }));
+  const displayedSubjects = useMemo(() => {
+    const currentSubjects =
+      questionsData[activeSemester as keyof typeof questionsData] || [];
+
+    return searchQuery
+      ? Object.entries(questionsData).flatMap(([semester, subjects]) =>
+          subjects
+            .filter((subject) =>
+              subject.text.toLowerCase().includes(searchQuery.toLowerCase())
+            )
+            .map((subject) => ({
+              ...subject,
+              semester: semester.replace("_", " "),
+            }))
+        )
+      : currentSubjects.map((subject) => ({
+          ...subject,
+          semester: activeSemester.replace("_", " "),
+        }));
+  }, [activeSemester, searchQuery]);
 
   const totalQuestions = Object.values(questionsData).reduce(
     (total, subjects) => total + subjects.length,
     0
   );
 
-  const handleLinkClick = (link: string) => {
-    if (link !== "#") {
-      window.open(link, "_blank", "noopener,noreferrer");
+  const convertGoogleDriveLink = (link: string): string => {
+    if (link.includes("drive.google.com/file/d/")) {
+      const fileId = link.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1];
+      if (fileId) {
+        return `https://drive.google.com/file/d/${fileId}/preview`;
+      }
     }
+    return link;
+  };
+
+  const handleLinkClick = (link: string, title: string, preview = false) => {
+    if (link !== "#") {
+      if (preview) {
+        setPreviewData({
+          isOpen: true,
+          title,
+          url: convertGoogleDriveLink(link),
+        });
+      } else {
+        window.open(link, "_blank", "noopener,noreferrer");
+      }
+    }
+  };
+
+  const closePreview = () => {
+    setPreviewData({
+      isOpen: false,
+      title: "",
+      url: "",
+    });
+  };
+
+  const getCategoryColors = (text: string, isDark: boolean) => {
+    const category = getSubjectCategory(text);
+    const colors = getCategoryColor(category, isDark);
+
+    const icon = getSubjectIcon(category);
+
+    return {
+      ...colors,
+      icon: () => icon,
+      iconBg: colors.bgColor,
+    };
   };
 
   return (
     <div
       className={`min-h-screen transition-colors duration-300 ${
-        isDarkMode ? "dark bg-gray-900" : "bg-gray-50"
+        isDarkMode ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-900"
       }`}
     >
       <motion.div
@@ -380,286 +435,340 @@ export default function IOEQuestionsPage() {
         </div>
       </motion.div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="w-full sm:max-w-md sm:mx-auto"
-        >
-          <div className="relative">
-            <Search
-              className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 transition-colors duration-300 ${
-                isDarkMode ? "text-gray-500" : "text-gray-400"
-              }`}
-            />
-            <Input
-              type="text"
-              placeholder="Search subjects..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className={`pl-10 h-9 rounded-lg w-full transition-colors duration-300 ${
-                isDarkMode
-                  ? "bg-gray-800 border-gray-600 text-white placeholder-gray-500 focus:border-blue-500"
-                  : "border-gray-300 focus:border-blue-500"
-              } focus:ring-1 focus:ring-blue-500`}
-            />
-          </div>
-        </motion.div>
+      {/* Main Content */}
+      <main className="container mx-auto px-3 sm:px-4 lg:px-6 pb-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="w-full sm:max-w-md sm:mx-auto"
+          >
+            <div className="relative">
+              <Search
+                className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 transition-colors duration-300 ${
+                  isDarkMode ? "text-gray-500" : "text-gray-400"
+                }`}
+              />
+              <Input
+                type="text"
+                placeholder="Search subjects..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className={`pl-10 h-9 rounded-lg w-full transition-colors duration-300 ${
+                  isDarkMode
+                    ? "bg-gray-800 border-gray-600 text-white placeholder-gray-500 focus:border-blue-500"
+                    : "border-gray-300 focus:border-blue-500"
+                } focus:ring-1 focus:ring-blue-500`}
+              />
+            </div>
+          </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-        >
-          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2">
-            {semesters.map((semester, index) => (
-              <motion.div
-                key={semester}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.6 + index * 0.03 }}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <Button
-                  variant={
-                    selectedSemester === semester ? "default" : "outline"
-                  }
-                  onClick={() => setSelectedSemester(semester)}
-                  className={`w-full h-8 sm:h-10 text-xs transition-all duration-200 ${
-                    selectedSemester === semester
-                      ? "bg-blue-600 hover:bg-blue-700 text-white"
-                      : isDarkMode
-                      ? "hover:bg-gray-700 border-gray-600 text-gray-300"
-                      : "hover:bg-gray-50 border-gray-300"
-                  }`}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+          >
+            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2">
+              {semesters.map((semester, index) => (
+                <motion.div
+                  key={semester}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.6 + index * 0.03 }}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                 >
-                  {semester.replace("_", " ")}
-                </Button>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
+                  <Button
+                    variant={
+                      activeSemester === semester ? "default" : "outline"
+                    }
+                    onClick={() => setActiveSemester(semester)}
+                    className={`w-full h-8 sm:h-10 text-xs transition-all duration-200 ${
+                      activeSemester === semester
+                        ? "bg-blue-600 hover:bg-blue-700 text-white"
+                        : isDarkMode
+                        ? "hover:bg-gray-700 border-gray-600 text-gray-300"
+                        : "hover:bg-gray-50 border-gray-300"
+                    }`}
+                  >
+                    {semester.replace("_", " ")}
+                  </Button>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
 
-        <motion.div
-          key={selectedSemester}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="text-left sm:text-center"
-        >
-          <h2
-            className={`text-lg font-semibold mb-1 transition-colors duration-300 ${
-              isDarkMode ? "text-white" : "text-gray-900"
-            }`}
+          <motion.div
+            key={activeSemester}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-left sm:text-center"
           >
-            {selectedSemester.replace("_", " ")}
-          </h2>
-          <p
-            className={`text-sm transition-colors duration-300 ${
-              isDarkMode ? "text-gray-400" : "text-gray-500"
-            }`}
-          >
-            {filteredSubjects.length} subject
-            {filteredSubjects.length !== 1 ? "s" : ""}
-            {searchQuery && ` matching "${searchQuery}"`}
-          </p>
-        </motion.div>
-
-        <AnimatePresence mode="wait">
-          {filteredSubjects.length > 0 ? (
-            <motion.div
-              key={selectedSemester + searchQuery}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"
+            <h2
+              className={`text-lg font-semibold mb-1 transition-colors duration-300 ${
+                isDarkMode ? "text-white" : "text-gray-900"
+              }`}
             >
-              {filteredSubjects.map((subject, index) => {
-                const category = getSubjectCategory(subject.text);
-                const categoryColors = getCategoryColor(category, isDarkMode);
+              {activeSemester.replace("_", " ")}
+            </h2>
+            <p
+              className={`text-sm transition-colors duration-300 ${
+                isDarkMode ? "text-gray-400" : "text-gray-500"
+              }`}
+            >
+              {displayedSubjects.length} subject
+              {displayedSubjects.length !== 1 ? "s" : ""}
+              {searchQuery && ` matching "${searchQuery}"`}
+            </p>
+          </motion.div>
+
+          {/* Subject Cards Grid */}
+          <motion.div
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            <AnimatePresence mode="wait">
+              {displayedSubjects.map((subject, index) => {
+                const categoryColors = getCategoryColors(
+                  subject.text,
+                  isDarkMode
+                );
                 return (
                   <motion.div
-                    key={index}
+                    key={`${subject.text}-${index}`}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.03 }}
-                    whileHover={{ y: -2, transition: { duration: 0.2 } }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ duration: 0.3, delay: index * 0.05 }}
+                    whileHover={{ y: -2 }}
+                    className="h-full"
                   >
                     <Card
-                      className={`transition-all duration-200 cursor-pointer group h-full ${
+                      className={`h-full transition-all duration-200 hover:shadow-md border ${
                         isDarkMode
-                          ? "bg-gray-800 border-gray-700 hover:border-blue-500 hover:shadow-lg"
-                          : "border hover:border-blue-300 hover:shadow-sm"
+                          ? "bg-gray-800 border-gray-700 hover:bg-gray-750"
+                          : "bg-white border-gray-200 hover:bg-gray-50"
                       }`}
                     >
-                      <CardContent className="p-3 flex flex-col h-full">
-                        <div className="flex items-start justify-between mb-2">
+                      <CardContent className="p-3 sm:p-4 h-full flex flex-col justify-between">
+                        <div className="flex items-start gap-2 mb-3">
                           <div
-                            className={`${categoryColors.bgColor} p-1.5 rounded-lg flex-shrink-0`}
+                            className={`p-1.5 rounded-lg ${categoryColors.iconBg} flex-shrink-0`}
                           >
-                            {getSubjectIcon(category)}
+                            <categoryColors.icon
+                              className={`h-4 w-4 ${categoryColors.iconColor}`}
+                            />
                           </div>
-                          <ExternalLink
-                            className={`h-4 w-4 transition-colors ${
-                              isDarkMode
-                                ? "text-gray-500 group-hover:text-blue-400"
-                                : "text-gray-400 group-hover:text-blue-500"
-                            } flex-shrink-0`}
-                          />
+                          <h3
+                            className={`font-medium text-sm leading-tight ${
+                              isDarkMode ? "text-gray-100" : "text-gray-900"
+                            }`}
+                          >
+                            {subject.text}
+                          </h3>
                         </div>
-                        <h3
-                          className={`font-medium mb-2 transition-colors line-clamp-2 text-sm flex-grow ${
-                            isDarkMode
-                              ? "text-gray-200 group-hover:text-blue-400"
-                              : "text-gray-900 group-hover:text-blue-600"
-                          }`}
-                        >
-                          {subject.text}
-                        </h3>
-                        {searchQuery && (
-                          <div className="mb-2">
-                            <span className="inline-flex items-center px-2 py-1 rounded-md text-xs bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
+
+                        <div className="flex items-center justify-between gap-2">
+                          {searchQuery && (
+                            <span
+                              className={`text-xs px-2 py-1 rounded-md ${
+                                isDarkMode
+                                  ? "bg-blue-900/30 text-blue-300"
+                                  : "bg-blue-100 text-blue-700"
+                              }`}
+                            >
                               {subject.semester}
                             </span>
-                          </div>
-                        )}
-                        <div className="flex items-center justify-between mt-auto">
+                          )}
                           <span
                             className={`${categoryColors.badgeColor} inline-flex items-center px-2 py-1 rounded-md text-xs flex-shrink-0`}
                           >
                             {categoryColors.name}
                           </span>
-                          <Button
-                            size="sm"
-                            className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 h-7 text-xs font-medium rounded-md transition-colors flex-shrink-0 ml-2"
-                            onClick={() => handleLinkClick(subject.link)}
-                          >
-                            <ExternalLink className="h-3 w-3 mr-1" />
-                            View
-                          </Button>
+                          <div className="flex gap-1">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className={`px-2 py-1.5 h-7 text-xs font-medium rounded-md transition-colors flex-shrink-0 ${
+                                isDarkMode
+                                  ? "border-gray-600 hover:bg-gray-700 text-gray-300"
+                                  : "border-gray-300 hover:bg-gray-100 text-gray-700"
+                              }`}
+                              onClick={() =>
+                                handleLinkClick(
+                                  subject.link,
+                                  subject.text,
+                                  true
+                                )
+                              }
+                            >
+                              <Eye className="h-3 w-3" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              className="bg-blue-600 hover:bg-blue-700 text-white px-2 py-1.5 h-7 text-xs font-medium rounded-md transition-colors flex-shrink-0"
+                              onClick={() =>
+                                handleLinkClick(
+                                  subject.link,
+                                  subject.text,
+                                  false
+                                )
+                              }
+                            >
+                              <ExternalLink className="h-3 w-3" />
+                            </Button>
+                          </div>
                         </div>
                       </CardContent>
                     </Card>
                   </motion.div>
                 );
               })}
-            </motion.div>
-          ) : (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="text-center py-8"
-            >
-              <FileText
-                className={`h-12 w-12 mx-auto mb-3 transition-colors duration-300 ${
-                  isDarkMode ? "text-gray-600" : "text-gray-300"
-                }`}
-              />
-              <h3
-                className={`text-lg font-medium mb-1 transition-colors duration-300 ${
-                  isDarkMode ? "text-white" : "text-gray-900"
-                }`}
-              >
-                No subjects found
-              </h3>
-              <p
-                className={`text-sm transition-colors duration-300 ${
-                  isDarkMode ? "text-gray-400" : "text-gray-500"
-                }`}
-              >
-                {searchQuery
-                  ? `No subjects match "${searchQuery}"`
-                  : `No subjects available for ${selectedSemester.replace(
-                      "_",
-                      " "
-                    )}`}
-              </p>
-            </motion.div>
-          )}
-        </AnimatePresence>
+            </AnimatePresence>
+          </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1 }}
-          className={`rounded-xl p-4 border mt-6 transition-colors duration-300 ${
-            isDarkMode ? "bg-gray-800 border-gray-700" : "bg-white"
-          }`}
-        >
-          <div className="grid grid-cols-3 gap-4 text-center">
-            <div>
-              <div className="text-xl font-bold text-blue-600">
-                {totalQuestions}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1 }}
+            className={`rounded-xl p-4 border mt-6 transition-colors duration-300 ${
+              isDarkMode ? "bg-gray-800 border-gray-700" : "bg-white"
+            }`}
+          >
+            <div className="grid grid-cols-3 gap-4 text-center">
+              <div>
+                <div className="text-xl font-bold text-blue-600">
+                  {totalQuestions}
+                </div>
+                <div
+                  className={`text-xs transition-colors duration-300 ${
+                    isDarkMode ? "text-gray-400" : "text-gray-500"
+                  }`}
+                >
+                  Papers
+                </div>
               </div>
-              <div
-                className={`text-xs transition-colors duration-300 ${
-                  isDarkMode ? "text-gray-400" : "text-gray-500"
-                }`}
-              >
-                Papers
+              <div>
+                <div className="text-xl font-bold text-green-600">8</div>
+                <div
+                  className={`text-xs transition-colors duration-300 ${
+                    isDarkMode ? "text-gray-400" : "text-gray-500"
+                  }`}
+                >
+                  Semesters
+                </div>
+              </div>
+              <div>
+                <div className="text-xl font-bold text-purple-600">3</div>
+                <div
+                  className={`text-xs transition-colors duration-300 ${
+                    isDarkMode ? "text-gray-400" : "text-gray-500"
+                  }`}
+                >
+                  Faculties
+                </div>
               </div>
             </div>
-            <div>
-              <div className="text-xl font-bold text-green-600">8</div>
-              <div
-                className={`text-xs transition-colors duration-300 ${
-                  isDarkMode ? "text-gray-400" : "text-gray-500"
-                }`}
-              >
-                Semesters
-              </div>
-            </div>
-            <div>
-              <div className="text-xl font-bold text-purple-600">3</div>
-              <div
-                className={`text-xs transition-colors duration-300 ${
-                  isDarkMode ? "text-gray-400" : "text-gray-500"
-                }`}
-              >
-                Faculties
-              </div>
-            </div>
-          </div>
-        </motion.div>
-      </div>
-
-      <motion.footer
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.2 }}
-        className={`mt-8 border-t transition-colors duration-300 ${
-          isDarkMode ? "bg-gray-800 border-gray-700" : "bg-white"
-        }`}
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
-          <div className="text-center space-y-2">
-            <p
-              className={`text-xs transition-colors duration-300 ${
-                isDarkMode ? "text-gray-400" : "text-gray-500"
-              }`}
-            >
-              Content sourced from{" "}
-              <a
-                href="https://digitalnce.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 hover:text-blue-700 font-medium"
-              >
-                Digital NCE Library
-              </a>
-            </p>
-            <p
-              className={`text-xs transition-colors duration-300 ${
-                isDarkMode ? "text-gray-500" : "text-gray-400"
-              }`}
-            >
-              Enhanced UI implementation • All rights reserved to original
-              content creators
-            </p>
-          </div>
+          </motion.div>
         </div>
-      </motion.footer>
+      </main>
+
+      <AnimatePresence>
+        {previewData.isOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-2 sm:p-4"
+            onClick={closePreview}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className={`w-full max-w-6xl h-full max-h-[90vh] rounded-lg overflow-hidden ${
+                isDarkMode ? "bg-gray-800" : "bg-white"
+              }`}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Modal Header */}
+              <div
+                className={`flex items-center justify-between p-3 sm:p-4 border-b ${
+                  isDarkMode
+                    ? "border-gray-700 bg-gray-800"
+                    : "border-gray-200 bg-gray-50"
+                }`}
+              >
+                <h2
+                  className={`font-semibold text-sm sm:text-base truncate pr-4 ${
+                    isDarkMode ? "text-gray-100" : "text-gray-900"
+                  }`}
+                >
+                  {previewData.title}
+                </h2>
+                <div className="flex items-center gap-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className={`px-2 py-1.5 h-8 text-xs ${
+                      isDarkMode
+                        ? "border-gray-600 hover:bg-gray-700 text-gray-300"
+                        : "border-gray-300 hover:bg-gray-100 text-gray-700"
+                    }`}
+                    onClick={() =>
+                      window.open(
+                        previewData.url.replace("/preview", "/view"),
+                        "_blank"
+                      )
+                    }
+                  >
+                    <Download className="h-3 w-3 mr-1" />
+                    Download
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className={`px-2 py-1.5 h-8 text-xs ${
+                      isDarkMode
+                        ? "border-gray-600 hover:bg-gray-700 text-gray-300"
+                        : "border-gray-300 hover:bg-gray-100 text-gray-700"
+                    }`}
+                    onClick={() => window.open(previewData.url, "_blank")}
+                  >
+                    <Maximize2 className="h-3 w-3 mr-1" />
+                    Full Screen
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className={`px-2 py-1.5 h-8 text-xs ${
+                      isDarkMode
+                        ? "border-gray-600 hover:bg-gray-700 text-gray-300"
+                        : "border-gray-300 hover:bg-gray-100 text-gray-700"
+                    }`}
+                    onClick={closePreview}
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
+                </div>
+              </div>
+
+              {/* PDF Viewer */}
+              <div className="h-full">
+                <iframe
+                  src={previewData.url}
+                  className="w-full h-full border-0"
+                  title={previewData.title}
+                  loading="lazy"
+                />
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
