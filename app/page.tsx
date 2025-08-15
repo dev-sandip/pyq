@@ -367,6 +367,21 @@ export default function IOEQuestionsInterface() {
     };
   };
 
+  const downloadLinkBuilder = (link: string) => {
+    if (link.includes("drive.google.com/file/d/")) {
+      const fileId = link.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1];
+      if (fileId) {
+        return `https://drive.google.com/uc?export=download&id=${fileId}`;
+      }
+    }
+    return link;
+  };
+
+  const handleDownload = (link: string) => {
+    const downloadLink = downloadLinkBuilder(link);
+    window.open(downloadLink, "_blank", "noopener,noreferrer");
+  };
+
   return (
     <div
       className={`min-h-screen transition-colors duration-300 ${
@@ -558,9 +573,7 @@ export default function IOEQuestionsInterface() {
                           <div
                             className={`p-1.5 rounded-lg ${categoryColors.iconBg} flex-shrink-0`}
                           >
-                            <categoryColors.icon
-                              className={`h-4 w-4 ${categoryColors.iconColor}`}
-                            />
+                            <categoryColors.icon />
                           </div>
                           <h3
                             className={`font-medium text-sm leading-tight ${
@@ -718,12 +731,7 @@ export default function IOEQuestionsInterface() {
                         ? "border-gray-600 hover:bg-gray-700 text-gray-300"
                         : "border-gray-300 hover:bg-gray-100 text-gray-700"
                     }`}
-                    onClick={() =>
-                      window.open(
-                        previewData.url.replace("/preview", "/view"),
-                        "_blank"
-                      )
-                    }
+                    onClick={() => handleDownload(previewData.url)}
                   >
                     <Download className="h-3 w-3 mr-1" />
                     Download
