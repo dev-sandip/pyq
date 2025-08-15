@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -176,11 +176,13 @@ const getCategoryColor = (category: string, isDark: boolean) => {
       light: {
         bgColor: "bg-blue-100",
         iconColor: "text-blue-800",
+        iconBg: "bg-blue-100",
         badgeColor: "bg-blue-100 text-blue-800 border-blue-200",
       },
       dark: {
         bgColor: "bg-blue-900/30",
         iconColor: "text-blue-300",
+        iconBg: "bg-blue-900/30",
         badgeColor: "bg-blue-900/30 text-blue-300 border-blue-700",
       },
     },
@@ -188,11 +190,13 @@ const getCategoryColor = (category: string, isDark: boolean) => {
       light: {
         bgColor: "bg-yellow-100",
         iconColor: "text-yellow-800",
+        iconBg: "bg-yellow-100",
         badgeColor: "bg-yellow-100 text-yellow-800 border-yellow-200",
       },
       dark: {
         bgColor: "bg-yellow-900/30",
         iconColor: "text-yellow-300",
+        iconBg: "bg-yellow-900/30",
         badgeColor: "bg-yellow-900/30 text-yellow-300 border-yellow-700",
       },
     },
@@ -200,11 +204,13 @@ const getCategoryColor = (category: string, isDark: boolean) => {
       light: {
         bgColor: "bg-gray-100",
         iconColor: "text-gray-800",
+        iconBg: "bg-gray-100",
         badgeColor: "bg-gray-100 text-gray-800 border-gray-200",
       },
       dark: {
         bgColor: "bg-gray-800/30",
         iconColor: "text-gray-300",
+        iconBg: "bg-gray-800/30",
         badgeColor: "bg-gray-800/30 text-gray-300 border-gray-600",
       },
     },
@@ -212,11 +218,13 @@ const getCategoryColor = (category: string, isDark: boolean) => {
       light: {
         bgColor: "bg-green-100",
         iconColor: "text-green-800",
+        iconBg: "bg-green-100",
         badgeColor: "bg-green-100 text-green-800 border-green-200",
       },
       dark: {
         bgColor: "bg-green-900/30",
         iconColor: "text-green-300",
+        iconBg: "bg-green-900/30",
         badgeColor: "bg-green-900/30 text-green-300 border-green-700",
       },
     },
@@ -224,11 +232,13 @@ const getCategoryColor = (category: string, isDark: boolean) => {
       light: {
         bgColor: "bg-orange-100",
         iconColor: "text-orange-800",
+        iconBg: "bg-orange-100",
         badgeColor: "bg-orange-100 text-orange-800 border-orange-200",
       },
       dark: {
         bgColor: "bg-orange-900/30",
         iconColor: "text-orange-300",
+        iconBg: "bg-orange-900/30",
         badgeColor: "bg-orange-900/30 text-orange-300 border-orange-700",
       },
     },
@@ -236,11 +246,13 @@ const getCategoryColor = (category: string, isDark: boolean) => {
       light: {
         bgColor: "bg-purple-100",
         iconColor: "text-purple-800",
+        iconBg: "bg-purple-100",
         badgeColor: "bg-purple-100 text-purple-800 border-purple-200",
       },
       dark: {
         bgColor: "bg-purple-900/30",
         iconColor: "text-purple-300",
+        iconBg: "bg-purple-900/30",
         badgeColor: "bg-purple-900/30 text-purple-300 border-purple-700",
       },
     },
@@ -248,11 +260,13 @@ const getCategoryColor = (category: string, isDark: boolean) => {
       light: {
         bgColor: "bg-red-100",
         iconColor: "text-red-800",
+        iconBg: "bg-red-100",
         badgeColor: "bg-red-100 text-red-800 border-red-200",
       },
       dark: {
         bgColor: "bg-red-900/30",
         iconColor: "text-red-300",
+        iconBg: "bg-red-900/30",
         badgeColor: "bg-red-900/30 text-red-300 border-red-700",
       },
     },
@@ -260,11 +274,13 @@ const getCategoryColor = (category: string, isDark: boolean) => {
       light: {
         bgColor: "bg-indigo-100",
         iconColor: "text-indigo-800",
+        iconBg: "bg-indigo-100",
         badgeColor: "bg-indigo-100 text-indigo-800 border-indigo-200",
       },
       dark: {
         bgColor: "bg-indigo-900/30",
         iconColor: "text-indigo-300",
+        iconBg: "bg-indigo-900/30",
         badgeColor: "bg-indigo-900/30 text-indigo-300 border-indigo-700",
       },
     },
@@ -283,7 +299,13 @@ const getCategoryColor = (category: string, isDark: boolean) => {
 export default function IOEQuestionsInterface() {
   const [activeSemester, setActiveSemester] = useState("1st_Semester");
   const [searchQuery, setSearchQuery] = useState("");
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("darkMode");
+      return saved ? JSON.parse(saved) : false;
+    }
+    return false;
+  });
   const [previewData, setPreviewData] = useState<{
     isOpen: boolean;
     title: string;
@@ -293,6 +315,15 @@ export default function IOEQuestionsInterface() {
     title: "",
     url: "",
   });
+
+  useEffect(() => {
+    localStorage.setItem("darkMode", JSON.stringify(isDarkMode));
+    if (isDarkMode) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, [isDarkMode]);
 
   const semesters = Object.keys(questionsData);
 
@@ -366,22 +397,23 @@ export default function IOEQuestionsInterface() {
       iconBg: colors.bgColor,
     };
   };
-
   const downloadLinkBuilder = (link: string) => {
     if (link.includes("drive.google.com/file/d/")) {
       const fileId = link.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1];
+
       if (fileId) {
         return `https://drive.google.com/uc?export=download&id=${fileId}`;
       }
     }
+
     return link;
   };
 
   const handleDownload = (link: string) => {
     const downloadLink = downloadLinkBuilder(link);
+
     window.open(downloadLink, "_blank", "noopener,noreferrer");
   };
-
   return (
     <div
       className={`min-h-screen transition-colors duration-300 ${
@@ -415,7 +447,7 @@ export default function IOEQuestionsInterface() {
                     isDarkMode ? "text-white" : "text-gray-900"
                   }`}
                 >
-                  IOE Questions
+                  IOE Past Year Questions
                 </motion.h1>
                 <motion.p
                   initial={{ opacity: 0 }}
@@ -545,7 +577,7 @@ export default function IOEQuestionsInterface() {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
-            <AnimatePresence mode="wait">
+            <AnimatePresence>
               {displayedSubjects.map((subject, index) => {
                 const categoryColors = getCategoryColors(
                   subject.text,
@@ -564,7 +596,7 @@ export default function IOEQuestionsInterface() {
                     <Card
                       className={`h-full transition-all duration-200 hover:shadow-md border ${
                         isDarkMode
-                          ? "bg-gray-800 border-gray-700 hover:bg-gray-750"
+                          ? "bg-gray-800 border-gray-700 hover:bg-gray-700/50"
                           : "bg-white border-gray-200 hover:bg-gray-50"
                       }`}
                     >
@@ -607,8 +639,8 @@ export default function IOEQuestionsInterface() {
                               variant="outline"
                               className={`px-2 py-1.5 h-7 text-xs font-medium rounded-md transition-colors flex-shrink-0 ${
                                 isDarkMode
-                                  ? "border-gray-600 hover:bg-gray-700 text-gray-300"
-                                  : "border-gray-300 hover:bg-gray-100 text-gray-700"
+                                  ? "border-gray-600 hover:bg-gray-700 text-gray-300 hover:text-white"
+                                  : "border-gray-300 hover:bg-gray-50 text-gray-700 hover:text-gray-900"
                               }`}
                               onClick={() =>
                                 handleLinkClick(
@@ -618,11 +650,16 @@ export default function IOEQuestionsInterface() {
                                 )
                               }
                             >
-                              <Eye className="h-3 w-3" />
+                              <Eye className="h-3 w-3 mr-1" />
+                              Preview
                             </Button>
                             <Button
                               size="sm"
-                              className="bg-blue-600 hover:bg-blue-700 text-white px-2 py-1.5 h-7 text-xs font-medium rounded-md transition-colors flex-shrink-0"
+                              className={`px-2 py-1.5 h-7 text-xs font-medium rounded-md transition-colors flex-shrink-0 ${
+                                isDarkMode
+                                  ? "bg-blue-600 hover:bg-blue-700 text-white"
+                                  : "bg-blue-600 hover:bg-blue-700 text-white"
+                              }`}
                               onClick={() =>
                                 handleLinkClick(
                                   subject.link,
@@ -631,7 +668,8 @@ export default function IOEQuestionsInterface() {
                                 )
                               }
                             >
-                              <ExternalLink className="h-3 w-3" />
+                              <ExternalLink className="h-3 w-3 mr-1" />
+                              View
                             </Button>
                           </div>
                         </div>
