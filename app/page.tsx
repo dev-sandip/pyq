@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
-import { motion, AnimatePresence } from "motion/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -415,50 +414,21 @@ export default function IOEQuestionsInterface() {
     window.open(downloadLink, "_blank", "noopener,noreferrer");
   };
   return (
-    <div
-      className={`min-h-screen transition-colors duration-300 ${
-        isDarkMode ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-900"
-      }`}
-    >
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className={`border-b transition-colors duration-300 ${
-          isDarkMode ? "bg-gray-800 border-gray-700" : "bg-white"
-        }`}
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
+    <div className="min-h-screen bg-background text-foreground">
+      <div className="border-b bg-card border-border transition-colors duration-300">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
           <div className="flex items-center justify-between">
-            <div className="text-left flex items-center space-x-3">
-              <motion.div
-                initial={{ scale: 0.8 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: 0.1 }}
-                className="w-8 h-8 sm:w-10 sm:h-10 bg-blue-600 rounded-lg flex items-center justify-center"
-              >
-                <GraduationCap className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
-              </motion.div>
+            <div className="flex items-center space-x-4">
+              <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105">
+                <GraduationCap className="h-6 w-6 text-white" />
+              </div>
               <div>
-                <motion.h1
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.2 }}
-                  className={`text-xl sm:text-2xl font-bold mb-1 transition-colors duration-300 ${
-                    isDarkMode ? "text-white" : "text-gray-900"
-                  }`}
-                >
+                <h1 className="text-3xl font-bold text-foreground">
                   IOE Past Year Questions
-                </motion.h1>
-                <motion.p
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.3 }}
-                  className={`text-xs sm:text-sm transition-colors duration-300 ${
-                    isDarkMode ? "text-gray-400" : "text-gray-600"
-                  }`}
-                >
-                  Institute of Engineering Past Papers
-                </motion.p>
+                </h1>
+                <p className="text-muted-foreground mt-1">
+                  Institute of Engineering Past Papers Collection
+                </p>
               </div>
             </div>
 
@@ -466,11 +436,7 @@ export default function IOEQuestionsInterface() {
               variant="outline"
               size="sm"
               onClick={() => setIsDarkMode(!isDarkMode)}
-              className={`transition-colors duration-300 ${
-                isDarkMode
-                  ? "border-gray-600 hover:bg-gray-700 text-gray-300"
-                  : "border-gray-300 hover:bg-gray-50"
-              }`}
+              className="h-10 w-10 p-0 transition-all duration-300 hover:scale-105 hover:bg-blue-50 dark:hover:bg-blue-900/20"
             >
               {isDarkMode ? (
                 <Sun className="h-4 w-4" />
@@ -480,341 +446,203 @@ export default function IOEQuestionsInterface() {
             </Button>
           </div>
         </div>
-      </motion.div>
+      </div>
 
-      {/* Main Content */}
-      <main className="container mx-auto px-3 sm:px-4 lg:px-6 pb-6">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="w-full sm:max-w-md sm:mx-auto"
-          >
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+        <div className="mb-8">
+          <div className="max-w-md mx-auto">
             <div className="relative">
-              <Search
-                className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 transition-colors duration-300 ${
-                  isDarkMode ? "text-gray-500" : "text-gray-400"
-                }`}
-              />
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground transition-colors duration-200" />
               <Input
                 type="text"
-                placeholder="Search subjects..."
+                placeholder="Search subjects across all semesters..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className={`pl-10 h-9 rounded-lg w-full transition-colors duration-300 ${
-                  isDarkMode
-                    ? "bg-gray-800 border-gray-600 text-white placeholder-gray-500 focus:border-blue-500"
-                    : "border-gray-300 focus:border-blue-500"
-                } focus:ring-1 focus:ring-blue-500`}
+                className="pl-12 h-12 text-base bg-input border-border focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-300"
               />
             </div>
-          </motion.div>
+          </div>
+        </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-          >
-            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2">
-              {semesters.map((semester, index) => (
-                <motion.div
+        {!searchQuery && (
+          <div className="mb-8">
+            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
+              {semesters.map((semester) => (
+                <Button
                   key={semester}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.6 + index * 0.03 }}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                  variant={activeSemester === semester ? "default" : "outline"}
+                  onClick={() => setActiveSemester(semester)}
+                  className={`h-12 text-sm font-medium transition-all duration-300 hover:scale-105 ${
+                    activeSemester === semester
+                      ? "bg-blue-600 text-white shadow-md hover:bg-blue-700"
+                      : "bg-card text-card-foreground border-border hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:border-blue-300"
+                  }`}
                 >
-                  <Button
-                    variant={
-                      activeSemester === semester ? "default" : "outline"
-                    }
-                    onClick={() => setActiveSemester(semester)}
-                    className={`w-full h-8 sm:h-10 text-xs transition-all duration-200 ${
-                      activeSemester === semester
-                        ? "bg-blue-600 hover:bg-blue-700 text-white"
-                        : isDarkMode
-                        ? "hover:bg-gray-700 border-gray-600 text-gray-300"
-                        : "hover:bg-gray-50 border-gray-300"
-                    }`}
-                  >
-                    {semester.replace("_", " ")}
-                  </Button>
-                </motion.div>
+                  {semester.replace("_", " ")}
+                </Button>
               ))}
             </div>
-          </motion.div>
+          </div>
+        )}
 
-          <motion.div
-            key={activeSemester}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-left sm:text-center"
-          >
-            <h2
-              className={`text-lg font-semibold mb-1 transition-colors duration-300 ${
-                isDarkMode ? "text-white" : "text-gray-900"
-              }`}
-            >
-              {activeSemester.replace("_", " ")}
-            </h2>
-            <p
-              className={`text-sm transition-colors duration-300 ${
-                isDarkMode ? "text-gray-400" : "text-gray-500"
-              }`}
-            >
-              {displayedSubjects.length} subject
-              {displayedSubjects.length !== 1 ? "s" : ""}
-              {searchQuery && ` matching "${searchQuery}"`}
-            </p>
-          </motion.div>
+        <div className="mb-6">
+          <h2 className="text-2xl font-semibold text-foreground mb-2">
+            {searchQuery ? `Search Results` : activeSemester.replace("_", " ")}
+          </h2>
+          <p className="text-muted-foreground">
+            {displayedSubjects.length} subject
+            {displayedSubjects.length !== 1 ? "s" : ""}
+            {searchQuery && ` matching "${searchQuery}"`}
+          </p>
+        </div>
 
-          {/* Subject Cards Grid */}
-          <motion.div
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
-            <AnimatePresence>
-              {displayedSubjects.map((subject, index) => {
-                const categoryColors = getCategoryColors(
-                  subject.text,
-                  isDarkMode
-                );
-                return (
-                  <motion.div
-                    key={`${subject.text}-${index}`}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    transition={{ duration: 0.3, delay: index * 0.05 }}
-                    whileHover={{ y: -2 }}
-                    className="h-full"
-                  >
-                    <Card
-                      className={`h-full transition-all duration-200 hover:shadow-md border ${
-                        isDarkMode
-                          ? "bg-gray-800 border-gray-700 hover:bg-gray-700/50"
-                          : "bg-white border-gray-200 hover:bg-gray-50"
-                      }`}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+          {displayedSubjects.map((subject, index) => {
+            const categoryColors = getCategoryColors(subject.text, isDarkMode);
+            return (
+              <Card
+                key={`${subject.text}-${subject.semester}-${index}`}
+                className="bg-card border-border hover:shadow-lg transition-all duration-300 group hover:scale-[1.02] hover:border-blue-300"
+              >
+                <CardContent className="p-6">
+                  <div className="flex items-start gap-4 mb-4">
+                    <div
+                      className={`p-3 rounded-lg ${categoryColors.iconBg} flex-shrink-0 transition-all duration-300 group-hover:scale-110`}
                     >
-                      <CardContent className="p-3 sm:p-4 h-full flex flex-col justify-between">
-                        <div className="flex items-start gap-2 mb-3">
-                          <div
-                            className={`p-1.5 rounded-lg ${categoryColors.iconBg} flex-shrink-0`}
-                          >
-                            <categoryColors.icon />
-                          </div>
-                          <h3
-                            className={`font-medium text-sm leading-tight ${
-                              isDarkMode ? "text-gray-100" : "text-gray-900"
-                            }`}
-                          >
-                            {subject.text}
-                          </h3>
-                        </div>
-
-                        <div className="flex items-center justify-between gap-2">
-                          {searchQuery && (
-                            <span
-                              className={`text-xs px-2 py-1 rounded-md ${
-                                isDarkMode
-                                  ? "bg-blue-900/30 text-blue-300"
-                                  : "bg-blue-100 text-blue-700"
-                              }`}
-                            >
-                              {subject.semester}
-                            </span>
-                          )}
-                          <span
-                            className={`${categoryColors.badgeColor} inline-flex items-center px-2 py-1 rounded-md text-xs flex-shrink-0`}
-                          >
-                            {categoryColors.name}
+                      <categoryColors.icon />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-semibold text-card-foreground text-base leading-tight mb-2">
+                        {subject.text}
+                      </h3>
+                      <div className="flex items-center gap-2">
+                        {searchQuery && (
+                          <span className="text-xs px-2 py-1 rounded-md bg-blue-100 text-blue-800 border border-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-700">
+                            {subject.semester}
                           </span>
-                          <div className="flex gap-1">
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              className={`px-2 py-1.5 h-7 text-xs font-medium rounded-md transition-colors flex-shrink-0 ${
-                                isDarkMode
-                                  ? "border-gray-600 hover:bg-gray-700 text-gray-300 hover:text-white"
-                                  : "border-gray-300 hover:bg-gray-50 text-gray-700 hover:text-gray-900"
-                              }`}
-                              onClick={() =>
-                                handleLinkClick(
-                                  subject.link,
-                                  subject.text,
-                                  true
-                                )
-                              }
-                            >
-                              <Eye className="h-3 w-3 mr-1" />
-                              Preview
-                            </Button>
-                            <Button
-                              size="sm"
-                              className={`px-2 py-1.5 h-7 text-xs font-medium rounded-md transition-colors flex-shrink-0 ${
-                                isDarkMode
-                                  ? "bg-blue-600 hover:bg-blue-700 text-white"
-                                  : "bg-blue-600 hover:bg-blue-700 text-white"
-                              }`}
-                              onClick={() =>
-                                handleLinkClick(
-                                  subject.link,
-                                  subject.text,
-                                  false
-                                )
-                              }
-                            >
-                              <ExternalLink className="h-3 w-3 mr-1" />
-                              View
-                            </Button>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </motion.div>
-                );
-              })}
-            </AnimatePresence>
-          </motion.div>
+                        )}
+                        <span
+                          className={`${categoryColors.badgeColor} text-xs px-2 py-1 rounded-md border`}
+                        >
+                          {categoryColors.name}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1 }}
-            className={`rounded-xl p-4 border mt-6 transition-colors duration-300 ${
-              isDarkMode ? "bg-gray-800 border-gray-700" : "bg-white"
-            }`}
-          >
-            <div className="grid grid-cols-3 gap-4 text-center">
-              <div>
-                <div className="text-xl font-bold text-blue-600">
-                  {totalQuestions}
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="flex-1 h-9 text-sm bg-card border-border hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:border-blue-300 transition-all duration-300 hover:scale-105"
+                      onClick={() =>
+                        handleLinkClick(subject.link, subject.text, true)
+                      }
+                    >
+                      <Eye className="h-4 w-4 mr-2" />
+                      Preview
+                    </Button>
+                    <Button
+                      size="sm"
+                      className="flex-1 h-9 text-sm bg-blue-600 text-white hover:bg-blue-700 transition-all duration-300 hover:scale-105 hover:shadow-md"
+                      onClick={() =>
+                        handleLinkClick(subject.link, subject.text, false)
+                      }
+                    >
+                      <ExternalLink className="h-4 w-4 mr-2" />
+                      Open
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+
+        <div className="mt-12">
+          <Card className="bg-card border-border transition-all duration-300 hover:shadow-lg">
+            <CardContent className="p-8">
+              <div className="grid grid-cols-3 gap-8 text-center">
+                <div className="transition-all duration-300 hover:scale-105">
+                  <div className="text-3xl font-bold text-blue-600 mb-2">
+                    {totalQuestions}
+                  </div>
+                  <div className="text-muted-foreground font-medium">
+                    Total Papers
+                  </div>
                 </div>
-                <div
-                  className={`text-xs transition-colors duration-300 ${
-                    isDarkMode ? "text-gray-400" : "text-gray-500"
-                  }`}
-                >
-                  Papers
+                <div className="transition-all duration-300 hover:scale-105">
+                  <div className="text-3xl font-bold text-blue-600 mb-2">8</div>
+                  <div className="text-muted-foreground font-medium">
+                    Semesters
+                  </div>
+                </div>
+                <div className="transition-all duration-300 hover:scale-105">
+                  <div className="text-3xl font-bold text-blue-600 mb-2">3</div>
+                  <div className="text-muted-foreground font-medium">
+                    Faculties
+                  </div>
                 </div>
               </div>
-              <div>
-                <div className="text-xl font-bold text-green-600">8</div>
-                <div
-                  className={`text-xs transition-colors duration-300 ${
-                    isDarkMode ? "text-gray-400" : "text-gray-500"
-                  }`}
-                >
-                  Semesters
-                </div>
-              </div>
-              <div>
-                <div className="text-xl font-bold text-purple-600">3</div>
-                <div
-                  className={`text-xs transition-colors duration-300 ${
-                    isDarkMode ? "text-gray-400" : "text-gray-500"
-                  }`}
-                >
-                  Faculties
-                </div>
-              </div>
-            </div>
-          </motion.div>
+            </CardContent>
+          </Card>
         </div>
       </main>
 
-      <AnimatePresence>
-        {previewData.isOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-2 sm:p-4"
-            onClick={closePreview}
+      {previewData.isOpen && (
+        <div
+          className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 animate-in fade-in duration-300"
+          onClick={closePreview}
+        >
+          <div
+            className="w-full max-w-6xl h-full max-h-[90vh] bg-card rounded-lg overflow-hidden shadow-2xl border border-border animate-in zoom-in-95 duration-300"
+            onClick={(e) => e.stopPropagation()}
           >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className={`w-full max-w-6xl h-full max-h-[90vh] rounded-lg overflow-hidden ${
-                isDarkMode ? "bg-gray-800" : "bg-white"
-              }`}
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* Modal Header */}
-              <div
-                className={`flex items-center justify-between p-3 sm:p-4 border-b ${
-                  isDarkMode
-                    ? "border-gray-700 bg-gray-800"
-                    : "border-gray-200 bg-gray-50"
-                }`}
-              >
-                <h2
-                  className={`font-semibold text-sm sm:text-base truncate pr-4 ${
-                    isDarkMode ? "text-gray-100" : "text-gray-900"
-                  }`}
+            <div className="flex items-center justify-between p-4 border-b border-border bg-muted/50">
+              <h2 className="font-semibold text-lg text-card-foreground truncate pr-4">
+                {previewData.title}
+              </h2>
+              <div className="flex items-center gap-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-9 px-3 bg-card border-border hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-300 hover:scale-105"
+                  onClick={() => handleDownload(previewData.url)}
                 >
-                  {previewData.title}
-                </h2>
-                <div className="flex items-center gap-2">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className={`px-2 py-1.5 h-8 text-xs ${
-                      isDarkMode
-                        ? "border-gray-600 hover:bg-gray-700 text-gray-300"
-                        : "border-gray-300 hover:bg-gray-100 text-gray-700"
-                    }`}
-                    onClick={() => handleDownload(previewData.url)}
-                  >
-                    <Download className="h-3 w-3 mr-1" />
-                    Download
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className={`px-2 py-1.5 h-8 text-xs ${
-                      isDarkMode
-                        ? "border-gray-600 hover:bg-gray-700 text-gray-300"
-                        : "border-gray-300 hover:bg-gray-100 text-gray-700"
-                    }`}
-                    onClick={() => window.open(previewData.url, "_blank")}
-                  >
-                    <Maximize2 className="h-3 w-3 mr-1" />
-                    Full Screen
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className={`px-2 py-1.5 h-8 text-xs ${
-                      isDarkMode
-                        ? "border-gray-600 hover:bg-gray-700 text-gray-300"
-                        : "border-gray-300 hover:bg-gray-100 text-gray-700"
-                    }`}
-                    onClick={closePreview}
-                  >
-                    <X className="h-3 w-3" />
-                  </Button>
-                </div>
+                  <Download className="h-4 w-4 mr-2" />
+                  Download
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-9 px-3 bg-card border-border hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-300 hover:scale-105"
+                  onClick={() => window.open(previewData.url, "_blank")}
+                >
+                  <Maximize2 className="h-4 w-4 mr-2" />
+                  Full Screen
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-9 w-9 p-0 bg-card border-border hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-300 hover:scale-105"
+                  onClick={closePreview}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
               </div>
+            </div>
 
-              {/* PDF Viewer */}
-              <div className="h-full">
-                <iframe
-                  src={previewData.url}
-                  className="w-full h-full border-0"
-                  title={previewData.title}
-                  loading="lazy"
-                />
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            <div className="h-full">
+              <iframe
+                src={previewData.url}
+                className="w-full h-full border-0"
+                title={previewData.title}
+                loading="lazy"
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
