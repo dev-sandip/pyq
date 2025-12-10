@@ -1,0 +1,93 @@
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@300;400;500;600&family=Chakra+Petch:wght@400;600;700&family=JetBrains+Mono:wght@400&display=swap');
+
+@import 'tailwindcss';
+
+/* --- 1. Define Design Tokens --- */
+@theme {
+  /* Typography */
+  --font-header: 'Chakra Petch', sans-serif;
+  --font-body: 'Archivo', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  /* We map semantic names to our CSS variables defined below */
+  --color-bg-primary: var(--bg-primary);
+  --color-bg-secondary: var(--bg-secondary);
+  --color-bg-card: var(--bg-card);
+
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-border-subtle: var(--border-subtle);
+}
+
+/* --- 2. Google Fonts --- */
+
+/* --- 3. Base Styles & Theme Variables --- */
+@layer base {
+  /* LIGHT MODE (Default) */
+  :root {
+    --bg-primary: #f2f2f5; /* Light Paper Gray */
+    --bg-secondary: #e4e4e7; /* Slightly darker gray */
+    --bg-card: #ffffff;
+
+    --text-primary: #18181b; /* Zinc 900 */
+    --text-secondary: #52525b; /* Zinc 600 */
+
+    --accent: #4f46e5; /* Indigo 600 */
+    --accent-hover: #4338ca; /* Indigo 700 */
+    --accent-foreground: #ffffff;
+
+    --border-subtle: #d4d4d8;
+  }
+
+  /* DARK MODE (Triggered by class="dark" on html/body) */
+  .dark {
+    --bg-primary: #09090b; /* Zinc 950 */
+    --bg-secondary: #18181b; /* Zinc 900 */
+    --bg-card: #121214;
+
+    --text-primary: #f4f4f5; /* Zinc 100 */
+    --text-secondary: #a1a1aa; /* Zinc 400 */
+
+    --accent: #22d3ee; /* Cyan 400 */
+    --accent-hover: #06b6d4; /* Cyan 500 */
+    --accent-foreground: #000000;
+
+    --border-subtle: #27272a;
+  }
+
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    transition:
+      background-color 0.3s ease,
+      color 0.3s ease;
+  }
+}
+
+/* --- 4. Utilities --- */
+@layer utilities {
+  .glass-panel {
+    @apply backdrop-blur-md bg-bg-card/70 border border-border-subtle;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-border-subtle rounded-full;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-accent;
+  }
+}
