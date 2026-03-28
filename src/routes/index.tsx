@@ -1,21 +1,17 @@
 import { createFileRoute } from '@tanstack/react-router'
 import {
-  ChevronRight,
-  Command,
-  FileText,
   Hash,
   Search,
-  Sparkles,
 } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
+import type { QuestionsCollection } from '@/types'
 import { QuestionsData } from '@/data/questions'
 import QuestionCard from '@/components/QuestionCard'
 import { cn } from '@/lib/cn'
 import Header from '@/components/Header'
-import AttributionPage from '@/components/AttributionPage'
-import AttributionView from '@/components/AttributionPage'
 import DevelopersView from '@/components/Developers'
+import AttributionView from '@/components/AttributionPage'
 
 export const Route = createFileRoute('/')({ component: App })
 
@@ -27,24 +23,34 @@ function App() {
 
   const semesters = Object.keys(QuestionsData)
 
-  // Toggle Dark Mode
   const toggleTheme = () => {
     setDarkMode(!darkMode)
     document.documentElement.classList.toggle('dark')
   }
 
-  // Global Search Logic
-  const filteredQuestions = useMemo(() => {
-    if (searchQuery.trim().length > 0) {
-      const query = searchQuery.toLowerCase()
-      const allData = Object.entries(QuestionsData).flatMap(
-        ([sem, questions]) => questions.map((q) => ({ ...q, semester: sem })),
-      )
-      return allData.filter((q) => q.text.toLowerCase().includes(query))
-    }
-    return QuestionsData[activeTab] || []
-  }, [activeTab, searchQuery])
+const normalizedQuery = searchQuery.trim().toLowerCase()
 
+const allQuestions = useMemo(() => {
+  return Object.entries(QuestionsData as QuestionsCollection).flatMap(
+    ([semester, questions]) =>
+      questions.map((q) => ({
+        ...q,
+        semester,
+      })),
+  )
+}, [])
+
+const filteredQuestions = useMemo(() => {
+  if (normalizedQuery) {
+    return allQuestions.filter((q) =>
+      q.text.toLowerCase().includes(normalizedQuery),
+    )
+  }
+
+  return (
+    (QuestionsData as QuestionsCollection)[activeTab] ?? []
+  )
+}, [activeTab, normalizedQuery, allQuestions])
   return (
     <div className="min-h-screen w-full relative bg-bg-primary font-body text-text-primary transition-colors duration-300">
       {/* Subtle Grid Background (No Gradient Blobs) */}
