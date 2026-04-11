@@ -2,8 +2,25 @@ import { Link, createFileRoute } from '@tanstack/react-router'
 import { ChevronRight, ExternalLink, Terminal } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { motion } from 'motion/react'
+import { buildSeo } from '@/lib/seo'
 
 export const Route = createFileRoute('/developers')({
+  head: () =>
+    buildSeo({
+      title: 'Developers | IOE Archive',
+      description:
+        'Meet the contributors and maintainers behind IOE Archive, the searchable past-question resource for IOE students.',
+      path: '/developers',
+      keywords: ['IOE Archive developers', 'project contributors', 'open source maintainers'],
+      jsonLd: {
+        '@context': 'https://schema.org',
+        '@type': 'AboutPage',
+        name: 'IOE Archive Developers',
+        url: 'https://dev-sandip.github.io/pyq/developers',
+        description:
+          'Contributor and maintainer information for the IOE Archive project.',
+      },
+    }),
   component: RouteComponent,
 })
 interface Contributor {
@@ -49,7 +66,7 @@ function RouteComponent() {
           <ChevronRight className="rotate-180" size={20} />
         </Link>
         <h2 className="font-header text-4xl font-bold text-text-primary">
-          System Contributors
+          Development Team
         </h2>
       </div>
 

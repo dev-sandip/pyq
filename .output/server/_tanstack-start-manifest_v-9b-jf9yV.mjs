@@ -1,0 +1,4 @@
+const tsrStartManifest = () => ({ "routes": { "__root__": { "filePath": "/home/sandip/Work/Personal/pyq/src/routes/__root.tsx", "children": ["/", "/attribution", "/developers"], "preloads": ["/assets/main-eFcNhJs3.js"], "assets": [] }, "/": { "filePath": "/home/sandip/Work/Personal/pyq/src/routes/index.tsx", "assets": [], "preloads": ["/assets/index-Bh1RO57-.js", "/assets/proxy-CTP8UMd5.js"] }, "/attribution": { "filePath": "/home/sandip/Work/Personal/pyq/src/routes/attribution.tsx", "assets": [], "preloads": ["/assets/attribution-BSTYR-SK.js", "/assets/external-link-Di6il3lY.js", "/assets/proxy-CTP8UMd5.js"] }, "/developers": { "filePath": "/home/sandip/Work/Personal/pyq/src/routes/developers.tsx", "assets": [], "preloads": ["/assets/developers-l0bstTKM.js", "/assets/proxy-CTP8UMd5.js", "/assets/external-link-Di6il3lY.js"] } }, "clientEntry": "/assets/main-eFcNhJs3.js" });
+export {
+  tsrStartManifest
+};

@@ -1,8 +1,10 @@
+import * as React from 'react'
 import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 
 import appCss from '../styles.css?url'
+import Header from '@/components/Header'
 
 export const Route = createRootRoute({
   head: () => ({
@@ -15,13 +17,25 @@ export const Route = createRootRoute({
         content: 'width=device-width, initial-scale=1',
       },
       {
-        title: ' IOE Archive - PYQ Collection',
+        title: 'IOE Archive | Past Questions and Resources',
+      },
+      {
+        name: 'theme-color',
+        content: '#0f172a',
       },
     ],
     links: [
       {
         rel: 'stylesheet',
         href: appCss,
+      },
+      {
+        rel: 'icon',
+        href: '/favicon.ico',
+      },
+      {
+        rel: 'manifest',
+        href: '/manifest.json',
       },
     ],
   }),
@@ -30,13 +44,23 @@ export const Route = createRootRoute({
 })
 
 function RootDocument({ children }: { children: React.ReactNode }) {
+  const [darkMode, setDarkMode] = React.useState(false)
+
+  const toggleTheme = () => {
+    setDarkMode((prev) => {
+      const next = !prev
+      document.documentElement.classList.toggle('dark', next)
+      return next
+    })
+  }
+
   return (
     <html lang="en">
       <head>
         <HeadContent />
       </head>
-      <body>
-        {/* <Header />*/}
+      <body className="bg-bg-primary text-text-primary">
+        <Header toggleTheme={toggleTheme} isDark={darkMode} />
         {children}
         <TanStackDevtools
           config={{

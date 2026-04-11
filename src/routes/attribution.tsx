@@ -1,8 +1,25 @@
-import { Link, createFileRoute  } from '@tanstack/react-router'
+import { Link, createFileRoute } from '@tanstack/react-router'
 import { ArrowRight, ExternalLink, Sparkles } from 'lucide-react'
 import { motion } from 'motion/react'
+import { buildSeo } from '@/lib/seo'
 
 export const Route = createFileRoute('/attribution')({
+  head: () =>
+    buildSeo({
+      title: 'Attribution | IOE Archive',
+      description:
+        'Source and ownership information for the question collections surfaced through IOE Archive.',
+      path: '/attribution',
+      keywords: ['IOE Archive attribution', 'Digital NCE source', 'question ownership'],
+      jsonLd: {
+        '@context': 'https://schema.org',
+        '@type': 'AboutPage',
+        name: 'IOE Archive Attribution',
+        url: 'https://dev-sandip.github.io/pyq/attribution',
+        description:
+          'Attribution and ownership details for the educational resources linked by IOE Archive.',
+      },
+    }),
   component: RouteComponent,
 })
 
